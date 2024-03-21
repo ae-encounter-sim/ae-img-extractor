@@ -44,17 +44,17 @@ def run_file_transfer():
         for img_path in tqdm(img_list[:-1], desc=desc):
             img = img_path.split('/')[-1] #12345.png
             dir_path = img_path.replace(base_path, '/').replace(img, '') #/path/to/files/
-            dest_path = temp_dir + dir_path[1:] #/dest/path/to/files/
+            temp_dest = temp_dir + dir_path[1:] #/temp/path/to/files/
             
             # mkdirs and copy to temp dir accessible to adb pull
-            device.shell(f"su 0 sh -c 'mkdir -p {dest_path} && cp {img_path} {dest_path}'")
+            device.shell(f"su 0 sh -c 'mkdir -p {temp_dest} && cp {img_path} {temp_dest}'")
 
             # mkdirs in PC destination
             mkdir_path = settings.PC_DESTINATION_PATH + dir_path
             Path(mkdir_path).mkdir(parents=True, exist_ok=True)
 
             # pull file into destination
-            device.pull(dest_path + img, mkdir_path + img)
+            device.pull(temp_dest + img, mkdir_path + img)
 
     print('Files transferred, cleaning up device...')
     # delete temp dir on device
